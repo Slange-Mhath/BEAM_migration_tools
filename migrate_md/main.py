@@ -4,6 +4,7 @@ import pandas as pd
 import logging
 import sys
 from argparse import ArgumentParser
+from pprint import pprint
 
 if sys.version_info[0] == 2:
     raise Exception("Please use Python 3")
@@ -293,7 +294,7 @@ def merge_records_to_dict(acc_rows, list_of_keys):
 def get_file_name(file_path, mapped_dict):
     if mapped_dict["accession_name"]:
         accession_name = mapped_dict["accession_name"]
-        file_name = file_path + accession_name + ".json"
+        file_name = file_path + "_" + accession_name + ".json"
     else:
         file_name = file_path + "acc_not_specified" + ".json"
     return file_name
@@ -313,10 +314,17 @@ def write_relabeled_json(file_path, mapped_dict):
         f.close()
 
 
+def check_for_key_list(list_of_keys):
+    if list_of_keys != LIST_OF_KEYS:
+        with open(list_of_keys, 'r') as fh:
+            list_of_keys = json.load(fh)
+            return list_of_keys
+
 def main(acc_folder_path, list_of_keys, output_file):
     """
     :return:
     """
+    list_of_keys = check_for_key_list(list_of_keys)
     list_of_acc_files = get_file_path_list(acc_folder_path)
     if list_of_acc_files:
         for acc in list_of_acc_files:
