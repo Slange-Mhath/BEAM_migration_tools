@@ -1,4 +1,3 @@
-import argparse
 import json
 import sys
 import pandas as pd
@@ -67,10 +66,10 @@ def main(md_model_path, sheet_name, col_old_label, col_new_label, output_file=No
     cleaned_list = clean_up_keys(key_list, col_old_label, col_new_label)
     if output_file in ("-", "", None):
         sys.stdout.write(" ".join(str(x) for x in cleaned_list))
+        return cleaned_list
     else:
-        with open(output_file, "w") as f:
-            for item in cleaned_list:
-                print >> f, item
+        with open(output_file, "w") as fh:
+            json.dump(cleaned_list, fh)
 
 
 if __name__ == '__main__':
@@ -86,5 +85,5 @@ if __name__ == '__main__':
     parser.add_argument("-o", "--output", dest="output_file",
                         help="Write location")
     args = parser.parse_args()
-    main(args.md_model, args.sheet_name, args.col_old_label, args.col_new_label,
-         args.output_file)
+    pprint(main(args.md_model, args.sheet_name, args.col_old_label, args.col_new_label,
+         args.output_file))
