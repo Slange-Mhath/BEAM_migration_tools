@@ -5,6 +5,7 @@ import logging
 import sys
 from argparse import ArgumentParser
 from pprint import pprint
+from pathlib import Path
 
 if sys.version_info[0] == 2:
     raise Exception("Please use Python 3")
@@ -225,13 +226,15 @@ LIST_OF_KEYS = [{'new_label': 'collection_id',
 def get_file_path_list(acc_folder_path):
     list_of_files = list()
     for (dirpath, dirnames, filenames) in os.walk(acc_folder_path):
-        list_of_files += [os.path.join(dirpath, file) for file in filenames]
+        list_of_files += [os.path.join(dirpath, file) for file in filenames if
+                          Path(file).suffix == ".xls" or Path(file).suffix == ".ods"]
     return list_of_files
 
 
 def convert_acc_records_to_json(acc_file_path):
     """This takes the full file path incl file_name and the name of the
     worksheet of the accession file and returns a json obj."""
+    pprint(acc_file_path)
     excel_data_df = pd.read_excel(acc_file_path)
     records_str = excel_data_df.to_json(orient="records")
     records_in_json = json.loads(records_str)
@@ -319,6 +322,9 @@ def check_for_key_list(list_of_keys):
         with open(list_of_keys, 'r') as fh:
             list_of_keys = json.load(fh)
             return list_of_keys
+    else:
+        return LIST_OF_KEYS
+
 
 def main(acc_folder_path, list_of_keys, output_file):
     """
