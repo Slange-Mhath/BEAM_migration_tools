@@ -224,17 +224,16 @@ LIST_OF_KEYS = [{'new_label': 'collection_id',
 
 
 def get_file_path_list(acc_folder_path):
-    list_of_files = list()
+    list_of_files = []
     for (dirpath, dirnames, filenames) in os.walk(acc_folder_path):
         list_of_files += [os.path.join(dirpath, file) for file in filenames if
-                          Path(file).suffix == ".xls" or Path(file).suffix == ".ods"]
+                          Path(file).suffix in [".xls", ".ods"]]
     return list_of_files
 
 
 def convert_acc_records_to_json(acc_file_path):
     """This takes the full file path incl file_name and the name of the
     worksheet of the accession file and returns a json obj."""
-    pprint(acc_file_path)
     excel_data_df = pd.read_excel(acc_file_path)
     records_str = excel_data_df.to_json(orient="records")
     records_in_json = json.loads(records_str)
@@ -252,20 +251,20 @@ def relabel_json(file_as_dict, list_of_keys):
     :param list_of_keys: this takes the cleaned up list of keys to map
     :return:
     """
-    new_dict = {}
-    file_as_dict = dict((k.lower(), v) for k, v in file_as_dict.items())
+    relabeled_dict = {}
+    file_as_dict = {((k.lower(), v) for k, v in file_as_dict.items())}
     for keypair in list_of_keys:
         if keypair["old_label"] in file_as_dict:
             try:
-                new_dict.update({keypair["new_label"]: file_as_dict[keypair[
-                    "old_label"]]})
+                relabeled_dict[keypair["new_label"]] = file_as_dict[keypair[
+                    "old_label"]]
             except KeyError:
                 logging.info(f"It seems like the keypair {keypair} has no key "
                              f"'new_label'")
                 continue
         else:
             logging.info(f"{keypair['old_label']} is not in the accession")
-    return new_dict
+    return relabeled_dict
 
 
 def merge_records_to_dict(acc_rows, list_of_keys):
