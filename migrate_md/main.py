@@ -251,7 +251,6 @@ def relabel_json(file_as_dict, list_of_keys):
     :param list_of_keys: this takes the cleaned up list of keys to map
     :return:
     """
-   #TODO: Here is a mistake in the soup
     relabeled_dict = {}
     file_as_dict = dict((k.lower(), v) for k, v in file_as_dict.items())
     for keypair in list_of_keys:
