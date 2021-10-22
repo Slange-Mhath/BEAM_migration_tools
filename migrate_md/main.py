@@ -297,9 +297,9 @@ def get_file_name(file_path, output_file_prefix, mapped_dict):
     original_file_name = file_path.rsplit('/', 1)[-1]
     if mapped_dict["accession_name"]:
         accession_name = mapped_dict["accession_name"]
-        file_name = output_file_prefix + "_" + original_file_name + accession_name + ".json"
+        file_name = output_file_prefix + "_" + original_file_name + "_" + accession_name + ".json"
     else:
-        file_name = output_file_prefix + "_" + original_file_name + "acc_not_specified" + ".json"
+        file_name = output_file_prefix + "_" + original_file_name + "_" + "acc_not_specified" + ".json"
     return file_name
 
 
