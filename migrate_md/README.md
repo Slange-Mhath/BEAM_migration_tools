@@ -16,7 +16,7 @@ the arguments of which are 2 mandatory:
 exact folder structure isn't important, which means that files in subfolders are
 also respected.
    
-2. `"output_file"` specifies a path/name of the relabeled and migrated 
+2. `"output_file_prefix"` specifies a path/name of the relabeled and migrated 
    outputfile which will be in json and ending with the accession name.
    The format of the filename will be something like 
    output_file_myaccession.json

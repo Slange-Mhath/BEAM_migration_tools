@@ -293,23 +293,25 @@ def merge_records_to_dict(acc_rows, list_of_keys):
     return relabeled_dict
 
 
-def get_file_name(file_path, mapped_dict):
+def get_file_name(file_path, output_file_prefix, mapped_dict):
+    original_file_name = file_path.rsplit('/', 1)[-1]
     if mapped_dict["accession_name"]:
         accession_name = mapped_dict["accession_name"]
-        file_name = file_path + "_" + accession_name + ".json"
+        file_name = output_file_prefix + "_" + original_file_name + accession_name + ".json"
     else:
-        file_name = file_path + "acc_not_specified" + ".json"
+        file_name = output_file_prefix + "_" + original_file_name + "acc_not_specified" + ".json"
     return file_name
 
 
-def write_relabeled_json(file_path, mapped_dict):
+def write_relabeled_json(file_path, output_file_prefix, mapped_dict):
     """
     This writes the relabeled dict into a json file at the given path
-    :param file_path: path where the json should be written to
+    :param file_path: original path of the file
+    :param output_file_prefix: user customised prefix for the new output
     :param mapped_dict: the relabeled dict which should be written to the json
     :return:
     """
-    file_name = get_file_name(file_path, mapped_dict)
+    file_name = get_file_name(file_path, output_file_prefix, mapped_dict)
     converted_md_object = json.dumps(mapped_dict, sort_keys=True)
     with open(file_name, "w") as f:
         f.write(converted_md_object)
@@ -325,7 +327,7 @@ def check_for_key_list(list_of_keys):
         return LIST_OF_KEYS
 
 
-def main(acc_folder_path, list_of_keys, output_file):
+def main(acc_folder_path, list_of_keys, output_file_prefix):
     """
     :return:
     """
@@ -335,7 +337,7 @@ def main(acc_folder_path, list_of_keys, output_file):
         for acc in list_of_acc_files:
             records_as_json = convert_acc_records_to_json(acc)
             merged_relabeled_records = merge_records_to_dict(records_as_json, list_of_keys)
-            write_relabeled_json(output_file, merged_relabeled_records)
+            write_relabeled_json(acc, output_file_prefix, merged_relabeled_records)
     else:
         raise Exception(f"It seems that there are no accession files in the "
                         f"folder {acc_folder_path}")
@@ -345,11 +347,11 @@ if __name__ == '__main__':
     parser = ArgumentParser(description="...")
     parser.add_argument("acc_folder_path", help="Base path where"
                                                 "the accessions are stored")
-    parser.add_argument("output_file", help="Write location of the new output")
+    parser.add_argument("output_file_prefix", help="Write location of the new output")
     # list_of_keys is optional, so you can pass any list of keys you like to migrate
     parser.add_argument("-o", "--list_of_keys", default=LIST_OF_KEYS,
                         help="List of keys as a dict "
                              "with old and new labels, which "
                              "shall be mapped")
     args = parser.parse_args()
-    main(args.acc_folder_path, args.list_of_keys, args.output_file)
+    main(args.acc_folder_path, args.list_of_keys, args.output_file_prefix)
